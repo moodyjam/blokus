@@ -1,3 +1,5 @@
+import numpy as np
+
 class Piece:
     def __init__(self, color, shape):
         self.color = color
@@ -92,24 +94,50 @@ class Board:
                 row += self.colors[self.grid[i][j]] + " "
             print(row)
 
+def parse_blocks(file_name , rows, columns):   #for blocks.txt, rows = 3 columns =5
+    #this parses
+    game = {}
+    with open("blocks.txt", 'r') as file:
+        blocks = file.read().split('\n')
+        for block in blocks:
+            if block != '':
+                block = block.split(" ")
+                color = block.pop(0)
+                block = [int(i) for i in block]
+                array = [block[columns*i: columns*(i+1)] for i in range(rows)]
+                piece = Piece(color, array)
+
+                if color not in game:
+                    game[color] = []
+                
+                game[color].append(piece)
+    
+    return game
+
+            
+
+
 if __name__ == "__main__":
+    game = parse_blocks("blocks.txt", rows = 3, columns = 5)
     # Example usage:
-    red_piece = Piece("red", [[1, 1], [1, 1]])
-    red_piece2 = Piece("red", [[1, 0], [1, 1], [0, 1]])
+    # red_piece = Piece("red", [[1, 1], [1, 1]])
+    # red_piece2 = Piece("red", [[1, 0], [1, 1], [0, 1]])
+
+    red_piece = game['blue'][19]
+    
     # blue_piece = Piece("blue", [[1, 1], [1, 1], [0, 1]])
     # blue_piece2 = Piece("blue", [[1, 1], [1, 1]])
     board = Board(20)
-    board.place_piece(red_piece, 10, 10, force=True)
-    board.place_piece(red_piece2, 11, 8)
+    board.place_piece(red_piece, 15, 17, force = True)
+    # board.place_piece(red_piece2, 11, 8)
     # board.place_piece(blue_piece, 9, 8, force=True)
     # board.place_piece(blue_piece2, 12, 10)
-    board.print_board()
-    print()
+    # board.print_board()
 
     # # Flip the blue piece horizontally
-    # blue_piece.flip_piece("horizontal")
-    # board.place_piece(blue_piece, 10, 10)
-    # board.print_board()
+    # red_piece.flip_piece("horizontal")
+    board.place_piece(red_piece, 10, 10)
+    board.print_board()
     # print()
 
     # # Flip the blue piece vertically
