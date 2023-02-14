@@ -1,5 +1,9 @@
 <!DOCTYPE html>
 <html>
+<!-- include the Slick JavaScript and CSS files -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>
 <head>
 	<title>Blokus</title>
 	<style>
@@ -26,33 +30,119 @@
 		.yellow {
 		  background-color: yellow;
 		}
+		.piece-slider img {
+		  max-height: 30px;
+		}
 	  </style>
 </head>
 <body>
-	<table style="border-collapse: collapse; width: 600px; height: 600px;">
-		{% for row in board.grid %}
-			<tr>
-			{% for square in row %}
-				<td class="{{ square }}">
-				</td>
+	<div style="display: flex;">
+		<div class="grid-container">
+			<table style="border-collapse: collapse; width: 600px; height: 600px;">
+				{% for row in board.grid %}
+					<tr>
+					{% for square in row %}
+						<td class="{{ square }}">
+						</td>
+					{% endfor %}
+					</tr>
+				{% endfor %}
+			  </table>
+		</div>
+		<div class="piece-list">
+			<p>Select a piece:</p>
+			{% for i, piece in enumerate(pieces) %}
+				<li style="display: block; margin-right: 10px;">
+					<input type="radio" id="{{ i }}" name="piece" value="{{ piece.name }}">
+					<label for="{{ piece.name }}"><img src="{{ url_for('static', filename='pics/' + piece.name + '.png') }}" alt="{{ piece.name }}" style="height: 30px;"></label>
+				</li>
 			{% endfor %}
-			</tr>
-		{% endfor %}
-	  </table>
-	<form method="post" action="/place">
+		</div>
+		<!-- create a container element for the slider -->
+		<!-- <div id="piece-slider">
+			{% for i, piece in enumerate(pieces) %}
+			  <img class="slick-slide" src="{{ url_for('static', filename='pics/' + piece.name + '.png') }}" alt="{{ piece.name }}">
+			{% endfor %}
+		</div> -->
+		
+	</div>
+	<!-- initialize the slider using JavaScript -->
+	<p>Selected piece: <span id="selected-piece"></span></p>
+
+	<script>
+	// Get the radio buttons and the element to display the selected piece
+	const radioButtons = document.getElementsByName("piece");
+	const selectedPiece = document.getElementById("selected-piece");
+
+	// Add an event listener to the radio buttons to update the selected piece text
+	radioButtons.forEach((radio) => {
+		radio.addEventListener("change", (event) => {
+		selectedPiece.innerText = event.target.value;
+		});
+	});
+	</script>
+
+
+
+
+
+
+	
+
+	<!-- <form action="/select" method="POST">
+		<ul>
+			{% for i, piece in enumerate(pieces) %}
+				<li>
+					<input type="radio" id="{{ i }}" name="{{ piece.name }}" value="{{ piece.name }}">
+					<label for="{{ piece.name }}"><img src="{{ url_for('static', filename='pics/' + piece.name + '.png') }}" alt="{{ piece.name }}"></label>
+				</li>
+			{% endfor %}
+		</ul>
+		<input type="submit" value="Select">
+	</form> -->
+	<!-- <form method="post" action="/place">
 		<label for="x">X:</label>
 		<input type="number" id="x" name="x">
 		<label for="y">Y:</label>
 		<input type="number" id="y" name="y">
-		<select name="piece_index">
-			{% for i, piece in enumerate(pieces) %}
-				<option value="{{ i }}">{{ piece.color }}</option>
-			{% endfor %}
+		<select id="dropdown">
 		</select>
+		<script>
+			var dropdown = document.getElementById("dropdown");
+			if (dropdown) {
+			const images = ["blue_111100010000000.png", "green_1110001000.png", "yellow_111100010000000.png"];
+			for (var i = 0; i < images.length; i++) {
+				var option = document.createElement("option");
+				option.value = i + 1;
+				option.style.backgroundImage = `url(static/pics/${images[i]})`;
+				option.style.backgroundRepeat = "no-repeat";
+				option.style.backgroundPosition = "left center";
+				option.style.backgroundSize = "20px 20px";
+				option.style.paddingLeft = "25px";
+				dropdown.add(option);
+			}
+			dropdown.style.backgroundImage = `url(static/pics/${images[0]})`;
+			console.log(dropdown.style.backgroundImage);
+			dropdown.style.backgroundRepeat = "no-repeat";
+			dropdown.style.backgroundPosition = "center";
+			dropdown.style.backgroundSize = "50px";
+			// dropdown.style.paddingRight = "25px";
+			dropdown.style.height = "50px";
+			dropdown.style.width = "100px";
+			dropdown.addEventListener("change", function() {
+				var selectedIndex = dropdown.selectedIndex;
+				dropdown.style.backgroundImage = `url(static/pics/${images[selectedIndex]})`;
+			});
+			} else {
+			console.error("Element with ID 'dropdown' not found in the HTML document");
+			}
+		</script>
+		
 		<button type="submit">Place Piece</button>
-	</form>
+	</form> -->
 </body>
 </html>
+
 
 
 

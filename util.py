@@ -4,6 +4,7 @@ import itertools
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 
 def reduce_shape(array):
@@ -13,13 +14,17 @@ def reduce_shape(array):
     array = array[:, ~np.all(array == 0, axis=0)]
     return array
 
-def generate_piece_image(piece_array, color):
-
+def get_binary(piece_array):
     flat = list(itertools.chain.from_iterable(piece_array))
+    binary = "".join(map(str, flat))
+    return binary
+
+
+def generate_piece_image(piece_array, color, save_path):
 
     array = reduce_shape(np.array(piece_array))
 
-    binary = "".join(map(str, flat))
+    binary = get_binary(piece_array)
 
     fig, ax = plt.subplots()
     fig.set_size_inches(array.shape[1],array.shape[0])
@@ -31,7 +36,7 @@ def generate_piece_image(piece_array, color):
     ax.axis('off')  
     ax.set_ylim([0, array.shape[0]])
     ax.set_xlim([0, array.shape[1]])
-    plt.savefig(f'{color}_{binary}_piece.png', bbox_inches='tight')
+    plt.savefig(save_path, bbox_inches='tight')
 
 
 if __name__ == "__main__":

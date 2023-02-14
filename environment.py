@@ -1,7 +1,16 @@
+from util import *
+
 class Piece:
-    def __init__(self, color, shape):
+    def __init__(self, color, shape, root_dir="./static/pics"):
         self.color = color
         self.shape = shape
+        self.name = f"{self.color}_{get_binary(shape)}"
+
+        # Create pics if they don't exist. Then save the image path
+        if root_dir is not None:
+            self.img_path = os.path.join(root_dir, f"{self.name}.png")
+            if not os.path.exists(self.img_path):
+                generate_piece_image(self.shape, self.color, self.img_path)
 
     def rotate_piece(self):
         n = len(self.shape)
@@ -17,6 +26,7 @@ class Piece:
             self.shape = [row[::-1] for row in self.shape]
         elif direction == "vertical":
             self.shape = self.shape[::-1]
+
 
 class Board:
     def __init__(self, size):
