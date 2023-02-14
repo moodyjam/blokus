@@ -1,0 +1,13 @@
+#image-dropdown {
+    background-repeat: no-repeat;
+    background-position: right;
+    background-size: 20px;
+    padding-right: 25px;
+  }
+  
+#image-dropdown option {
+    background-repeat: no-repeat;
+    background-position: right;
+    background-size: 20px;
+    padding-right: 25px;
+  }
