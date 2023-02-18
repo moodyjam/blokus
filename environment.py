@@ -1,17 +1,22 @@
 from util import *
 import numpy as np
+from copy import copy
 
 class Game:
     def __init__(self, pieces, board):
         self.pieces = pieces
         self.board = board
-        self.board_copy = [row[:] for row in board]
+        self.board_copy = copy(board)
 
 class Piece:
-    def __init__(self, color, shape, root_dir="./static/pics"):
+    def __init__(self, color, shape, root_dir="./static/pics", name=None):
         self.color = color
         self.shape = shape
-        self.name = f"{self.color}_{get_binary(shape)}"
+
+        if name is None:
+            self.name = f"{self.color}_{get_binary(shape)}"
+        else:
+            self.name = name
 
         # Create pics if they don't exist. Then save the image path
         if root_dir is not None:
@@ -41,10 +46,15 @@ class Piece:
 
 
 class Board:
-    def __init__(self, size):
-        self.grid = [["0" for i in range(size)] for j in range(size)]
+    def __init__(self, size, grid=None, colors=None):
+        
         self.size = size
-        self.colors = {"0": ".", "red": "R", "blue": "B", "green": "G", "yellow": "Y"}
+
+        if grid is None:
+            self.grid = [["white" for i in range(size)] for j in range(size)]
+
+        if colors is None:
+            self.colors = {"white": ".", "red": "R", "blue": "B", "green": "G", "yellow": "Y"}
 
     def valid_place_piece(self, piece, x, y):
         valid_placement = False
