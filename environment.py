@@ -1,5 +1,11 @@
 from util import *
 
+class Game:
+    def __init__(self, pieces, board):
+        self.pieces = pieces
+        self.board = board
+        self.board_copy = [row[:] for row in board]
+
 class Piece:
     def __init__(self, color, shape, root_dir="./static/pics"):
         self.color = color
@@ -27,12 +33,17 @@ class Piece:
         elif direction == "vertical":
             self.shape = self.shape[::-1]
 
+    def to_dict(self):
+        return {"color": self.color, 
+                "shape": self.shape,
+                "name": self.name}
+
 
 class Board:
     def __init__(self, size):
-        self.grid = [[0 for i in range(size)] for j in range(size)]
+        self.grid = [["0" for i in range(size)] for j in range(size)]
         self.size = size
-        self.colors = {0: ".", "red": "R", "blue": "B", "green": "G", "yellow": "Y"}
+        self.colors = {"0": ".", "red": "R", "blue": "B", "green": "G", "yellow": "Y"}
 
     def valid_place_piece(self, piece, x, y):
         valid_placement = False
@@ -91,7 +102,10 @@ class Board:
             for i in range(len(piece.shape)):
                 for j in range(len(piece.shape[0])):
                     if piece.shape[i][j] == 1:
-                        self.grid[x + i][y + j] = piece.color
+                        try:
+                            self.grid[x + i][y + j] = piece.color
+                        except IndexError:
+                            return False
             return True
 
 
@@ -101,6 +115,11 @@ class Board:
             for j in range(self.size):
                 row += self.colors[self.grid[i][j]] + " "
             print(row)
+
+    def to_dict(self):
+        return {"grid": self.grid,
+                "size": self.size,
+                "colors": self.colors}
 
 if __name__ == "__main__":
     # Example usage:

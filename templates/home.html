@@ -1,9 +1,5 @@
 <!DOCTYPE html>
 <html>
-<!-- include the Slick JavaScript and CSS files -->
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>
 <head>
 	<title>Blokus</title>
 	<style>
@@ -36,110 +32,141 @@
 	  </style>
 </head>
 <body>
-	<div style="display: flex;">
-		<div class="grid-container">
+	<div style="display: flex;" id="all">
+		<div class="grid-container" id="grid">
 			<table style="border-collapse: collapse; width: 600px; height: 600px;">
-				{% for row in board.grid %}
+				{% for i, row in enumerate(board.grid) %}
 					<tr>
-					{% for square in row %}
-						<td class="{{ square }}">
-						</td>
+					{% for j, color in enumerate(row) %}
+						<td class="square" data-x="{{ i }}" data-y="{{ j }}" value="{{ square }}" style="background-color: {{ color }}; width: 10px; height: 10px;"></td>
 					{% endfor %}
 					</tr>
 				{% endfor %}
 			  </table>
 		</div>
 		<div class="piece-list">
-			<p>Select a piece:</p>
-			{% for i, piece in enumerate(pieces) %}
-				<li style="display: block; margin-right: 10px;">
-					<input type="radio" id="{{ i }}" name="piece" value="{{ piece.name }}">
-					<label for="{{ piece.name }}"><img src="{{ url_for('static', filename='pics/' + piece.name + '.png') }}" alt="{{ piece.name }}" style="height: 30px;"></label>
-				</li>
-			{% endfor %}
-		</div>
-		<!-- create a container element for the slider -->
-		<!-- <div id="piece-slider">
-			{% for i, piece in enumerate(pieces) %}
-			  <img class="slick-slide" src="{{ url_for('static', filename='pics/' + piece.name + '.png') }}" alt="{{ piece.name }}">
-			{% endfor %}
-		</div> -->
-		
+			<form method="post" action="{{ url_for('place') }}", id="pieces">
+			  <input type="hidden" id="x" name="x" value="">
+			  <input type="hidden" id="y" name="y" value="">
+			  <input type="hidden" id="name" name="name" value="">
+			  <label for="piece">Select a piece:</label>
+			  {% for piece in pieces %}
+			  <li style="display: block; margin-right: 10px;">
+				<input type="radio" id="{{ piece.name }}" name="piece" value="{{ piece.name }}">
+				<label for="{{ piece.name }}"><img src="{{ url_for('static', filename='pics/' + piece.name + '.png') }}" alt="{{ piece.name }}" style="height: 30px;"></label>
+			  </li>
+			  {% endfor %}
+			</form>
+		  </div>		  
 	</div>
-	<!-- initialize the slider using JavaScript -->
-	<p>Selected piece: <span id="selected-piece"></span></p>
-
 	<script>
-	// Get the radio buttons and the element to display the selected piece
-	const radioButtons = document.getElementsByName("piece");
-	const selectedPiece = document.getElementById("selected-piece");
 
-	// Add an event listener to the radio buttons to update the selected piece text
-	radioButtons.forEach((radio) => {
-		radio.addEventListener("change", (event) => {
-		selectedPiece.innerText = event.target.value;
+		// Declare a variable to store the selected piece name
+		let selectedPiece = ''
+		// Get the form element with id="pieces"
+		const form = document.getElementById('pieces');
+		// Add a change event listener to the form element
+		form.addEventListener('click', (event) => {
+		// Check if the changed element is a radio item
+		if (event.target.type === 'radio') {
+			// Get the selected piece name from the radio buttons
+			selectedPiece = event.target.value;
+			// Set the selected piece name in the hidden input element with id="name"
+			document.getElementById('name').value = selectedPiece;
+		}
 		});
-	});
-	</script>
 
+		const grid = document.getElementById('grid');
+		// Select the grid element and add a click event listener to it
+		grid.addEventListener('mouseover', (event) => {
+		// Check if the clicked element is a square elements
+		if (event.target.classList.contains('square')) {
+			// Get the x and y coordinates from the square's data attributes
+			const x = event.target.getAttribute('data-x');
+			const y = event.target.getAttribute('data-y');
 
+			// Set the x and y input values in the form
+			document.getElementById('x').value = x;
+			document.getElementById('y').value = y;
 
+			// Set the selected piece name in the hidden input element with id="name"
+			// document.getElementById('name').value = selectedPiece;
+			
+			// // Get the selected piece name from the radio buttons
+			// const selectedPiece = document.querySelector('input[name="piece"]:checked').value;
+			// // Set the selected piece name in the hidden input element with id="name"
+			document.getElementById('name').value = selectedPiece;
 
-
-
-	
-
-	<!-- <form action="/select" method="POST">
-		<ul>
-			{% for i, piece in enumerate(pieces) %}
-				<li>
-					<input type="radio" id="{{ i }}" name="{{ piece.name }}" value="{{ piece.name }}">
-					<label for="{{ piece.name }}"><img src="{{ url_for('static', filename='pics/' + piece.name + '.png') }}" alt="{{ piece.name }}"></label>
-				</li>
-			{% endfor %}
-		</ul>
-		<input type="submit" value="Select">
-	</form> -->
-	<!-- <form method="post" action="/place">
-		<label for="x">X:</label>
-		<input type="number" id="x" name="x">
-		<label for="y">Y:</label>
-		<input type="number" id="y" name="y">
-		<select id="dropdown">
-		</select>
-		<script>
-			var dropdown = document.getElementById("dropdown");
-			if (dropdown) {
-			const images = ["blue_111100010000000.png", "green_1110001000.png", "yellow_111100010000000.png"];
-			for (var i = 0; i < images.length; i++) {
-				var option = document.createElement("option");
-				option.value = i + 1;
-				option.style.backgroundImage = `url(static/pics/${images[i]})`;
-				option.style.backgroundRepeat = "no-repeat";
-				option.style.backgroundPosition = "left center";
-				option.style.backgroundSize = "20px 20px";
-				option.style.paddingLeft = "25px";
-				dropdown.add(option);
-			}
-			dropdown.style.backgroundImage = `url(static/pics/${images[0]})`;
-			console.log(dropdown.style.backgroundImage);
-			dropdown.style.backgroundRepeat = "no-repeat";
-			dropdown.style.backgroundPosition = "center";
-			dropdown.style.backgroundSize = "50px";
-			// dropdown.style.paddingRight = "25px";
-			dropdown.style.height = "50px";
-			dropdown.style.width = "100px";
-			dropdown.addEventListener("change", function() {
-				var selectedIndex = dropdown.selectedIndex;
-				dropdown.style.backgroundImage = `url(static/pics/${images[selectedIndex]})`;
+			// Submit the form programmatically to the /place endpoint
+			    // Submit the form programmatically to the /place endpoint
+			fetch('/hover', {
+				method: 'POST',
+				body: new FormData(form),
+				}).then(response => {
+				// Get the response as a text file
+				return response.text();
+				}).then(data => {
+				// Update the grid element with id="grid" with the HTML data
+				grid.innerHTML = data;
+				}).catch(error => {
+			// Handle the error as needed
 			});
-			} else {
-			console.error("Element with ID 'dropdown' not found in the HTML document");
-			}
-		</script>
+		}
+		});
 		
-		<button type="submit">Place Piece</button>
-	</form> -->
+
+
+
+		// Select the grid element and add a click event listener to it
+		grid.addEventListener('click', (event) => {
+		// Check if the clicked element is a square element
+		if (event.target.classList.contains('square')) {
+			// Get the x and y coordinates from the square's data attributes
+			const x = event.target.getAttribute('data-x');
+			const y = event.target.getAttribute('data-y');
+
+			// Set the x and y input values in the form
+			document.getElementById('x').value = x;
+			document.getElementById('y').value = y;
+
+			// Set the selected piece name in the hidden input element with id="name"
+			// document.getElementById('name').value = selectedPiece;
+			
+			// // Get the selected piece name from the radio buttons
+			// const selectedPiece = document.querySelector('input[name="piece"]:checked').value;
+			// // Set the selected piece name in the hidden input element with id="name"
+			document.getElementById('name').value = selectedPiece;
+
+			// Submit the form programmatically to the /place endpoint
+			    // Submit the form programmatically to the /place endpoint
+			fetch('/place', {
+				method: 'POST',
+				body: new FormData(form),
+				}).then(response => {
+				// Get the response as a text file
+				return response.text();
+				}).then(data => {
+				// Update the grid element with id="grid" with the HTML data
+				grid.innerHTML = data;
+
+				document.getElementById('pieces').innerHTML = ''
+				// No need to update the radio inputs since they are already rendered by the template
+
+				document.getElementById('x').value = '';
+				document.getElementById('y').value = '';
+
+				// Reset the form element with id="form" to its default values
+				document.getElementById('form').reset();
+			// No need to update the radio inputs since they are already rendered by the template
+				}).catch(error => {
+			// Handle the error as needed
+			});
+		}
+		});
+
+
+	</script>
+	
 </body>
 </html>
 

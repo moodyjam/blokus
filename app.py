@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, url_for, jsonify
 from jinja2 import Environment
 from environment import Piece, Board
 import json
@@ -20,19 +20,54 @@ board = Board(20)
 def home():
     return render_template("home.html", board=board, pieces=pieces)
 
+# @app.route("/place", methods=["POST"])
+# def place():
+#     x = int(request.form["x"])
+#     y = int(request.form["y"])
+#     name = str(request.form["name"])
+#     piece_index = int(request.form["piece_index"])
+#     piece = pieces[piece_index]
+
+#     board.place_piece(piece, x, y, force=True)
+
+#     # Put the image paths into json
+#     # img_paths = [piece.img_path for piece in pieces]
+#     # img_paths_json = json.dumps(img_paths)
+
+#     return render_template("home.html", pieces=pieces, board=board)
+
 @app.route("/place", methods=["POST"])
 def place():
+
     x = int(request.form["x"])
     y = int(request.form["y"])
-    piece_index = int(request.form["piece_index"])
-    piece = pieces[piece_index]
+    name = str(request.form["name"])
 
-    board.place_piece(piece, x, y, force=True)
+    # Find the piece with the matching name
+    for piece in pieces:
+        if piece.name == name:
+            board.place_piece(piece, x, y, force=True)
+            break
 
-    # Put the image paths into json
-    # img_paths = [piece.img_path for piece in pieces]
-    # img_paths_json = json.dumps(img_paths)
+    # return jsonify(pieces = [piece.to_dict() for piece in pieces], board = board.to_dict())
+    return render_template("home.html", pieces=pieces, board=board)
 
+@app.route("/hover", methods=["POST"])
+def hover():
+
+    x = int(request.form["x"])
+    y = int(request.form["y"])
+    name = str(request.form["name"])
+
+    
+
+    # Find the piece with the matching name
+    for piece in pieces:
+        if piece.name == name:
+            board.place_piece(piece, x, y, force=True)
+            break
+
+    # return jsonify(pieces = [piece.to_dict() for piece in pieces], board = board.to_dict())
     return render_template("home.html", pieces=pieces, board=board)
 
 if __name__ == "__main__":
