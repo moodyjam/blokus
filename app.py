@@ -21,7 +21,9 @@ game = Game(pieces = pieces, board = board)
 
 @app.route("/")
 def home():
-    return render_template("home.html", board=game.board, pieces=[piece.__dict__ for piece in game.pieces])
+    return render_template("home.html", board=game.board.__dict__, pieces=[piece.__dict__ for piece in game.pieces])
+    # return jsonify(board=game.board.__dict__, pieces=[piece.__dict__ for piece in game.pieces])
+
 
 # @app.route("/place", methods=["POST"])
 # def place():
@@ -39,6 +41,20 @@ def home():
 
 #     return render_template("home.html", pieces=pieces, board=board)
 
+@app.route("/rotate", methods=["POST"])
+def rotate():
+
+    name = str(request.form["name"])
+
+    # Find the piece with the matching name
+    for piece in pieces:
+        if piece.name == name:
+            piece.rotate_piece()
+            break
+
+    return jsonify(piece = piece.__dict__)
+    # return render_template("home.html", board=game.board, pieces=[piece.__dict__ for piece in game.pieces])
+
 @app.route("/place", methods=["POST"])
 def place():
 
@@ -53,7 +69,7 @@ def place():
             break
 
     # return jsonify(pieces = [piece.to_dict() for piece in pieces], board = board.to_dict())
-    return render_template("home.html", board=game.board, pieces=[piece.__dict__ for piece in game.pieces])
+    return render_template("home.html", board=game.board.__dict__, pieces=[piece.__dict__ for piece in game.pieces])
     # return jsonify(board=game.board.__dict__, pieces=[piece.__dict__ for piece in game.pieces])
 
 if __name__ == "__main__":
