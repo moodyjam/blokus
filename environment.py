@@ -103,10 +103,10 @@ class Board:
                 row += self.colors[self.grid[i][j]] + " "
             print(row)
 
-def parse_blocks(file_name , rows, columns):   #for blocks.txt, rows = 3 columns =5
+def parse_blocks(file_name= "blocks.txt", rows = 3, columns = 5):   #for blocks.txt, rows = 3 columns =5
     #this parses
     game = {}
-    with open("blocks.txt", 'r') as file:
+    with open(file_name, 'r') as file:
         blocks = file.read().split('\n')
         for block in blocks:
             if block != '':

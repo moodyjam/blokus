@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, url_for
 from jinja2 import Environment
-from environment import Piece, Board
+from environment import Piece, Board, parse_blocks
 import json
 
 def _enumerate(lst):
@@ -10,10 +10,14 @@ app = Flask(__name__)
 app.jinja_env.globals.update(enumerate=_enumerate)
 
 # Initialize some sample pieces and a board
-green_piece = Piece("green", [[1,1,1,0,0],[0,1,0,0,0]])
-blue_piece = Piece("blue", [[1,1,1,1,0],[0,0,1,0,0],[0,0,0,0,0]])
-yellow_piece = Piece("yellow", [[1,1,1,1,0],[0,0,1,0,0],[0,0,0,0,0]])
-pieces = [green_piece, blue_piece, yellow_piece]
+# green_piece = Piece("green", [[1,1,1,0,0],[0,1,0,0,0]])
+# blue_piece = Piece("blue", [[1,1,1,1,0],[0,0,1,0,0],[0,0,0,0,0]])
+# yellow_piece = Piece("yellow", [[1,1,1,1,0],[0,0,1,0,0],[0,0,0,0,0]])
+# pieces = [green_piece, blue_piece, yellow_piece]
+
+#initialize some sample pieces and a board
+blocks = parse_blocks()
+pieces = blocks["green"]
 board = Board(20)
 
 @app.route("/")
